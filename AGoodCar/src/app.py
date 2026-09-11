@@ -4,7 +4,7 @@ import socket
 import math
 from collections import deque, Counter
 import mediapipe as mp
-# wifi
+
 ESP32_IP = "192.168.4.1"
 ESP32_PORT = 4210
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,28 +28,23 @@ hands = mp_hands.Hands(
     min_tracking_confidence=0.75,
 )
 
-# Hand
+# Tay
 def dist(a, b):
     return math.hypot(a.x - b.x, a.y - b.y)
 
 def is_finger_extended(landmarks, tip_idx, pip_idx):
-    """Ngón tay được xem là duỗi nếu đầu ngón xa cổ tay hơn đốt giữa (pip)"""
     wrist = landmarks[0]
     return dist(landmarks[tip_idx], wrist) > dist(landmarks[pip_idx], wrist)
 
 def is_thumb_extended(landmarks):
-    """Ngón cái duỗi nếu đầu ngón cái xa gốc ngón út hơn gốc ngón cái"""
     return dist(landmarks[4], landmarks[17]) > dist(landmarks[2], landmarks[17])
 
 def thumb_direction(landmarks):
-    """Tính vector ngón cái từ gốc (CMC) tới đầu ngón (Tip)"""
     cmc = landmarks[1]
     tip = landmarks[4]
     dx = tip.x - cmc.x
     dy = tip.y - cmc.y 
-    
     angle = math.degrees(math.atan2(-dy, dx))
-    
     if 45 <= angle < 135: return "UP"
     elif -135 <= angle < -45: return "DOWN"
     elif -45 <= angle < 45: return "RIGHT"
@@ -168,7 +163,7 @@ try:
                 last_sent_cmd = stable_cmd
                 last_send_time = now
             draw_text(frame, f"CMD SENDING: {last_sent_cmd}", 80, 0.95, 3, (0, 0, 255))
-        cv2.imshow("Gesture Robot Control", frame)
+        cv2.imshow("Dieu Khien", frame)
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"): break
         elif key == ord("r"):
